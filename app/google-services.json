@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "83280270383",
+    "project_id": "mapdemo-rf",
+    "storage_bucket": "mapdemo-rf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83280270383:android:f9fa27643b4d68d74022da",
+        "android_client_info": {
+          "package_name": "com.rf.locationSource"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSXAx_uC4fcN4lKRwYHyKf6hnHy1MsRHE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

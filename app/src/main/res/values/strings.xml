@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Location Source</string>
+    <string name="key_session_expired">Session Expired</string>
+    <string name="key_you_session_has_expired">Your session has timed out for your security. Please log in again to access your account.</string>
+    <string name="key_invalid_access_token">Invalid access token. Please log in again to continue.</string>
+    <string name="key_ok">OK</string>
+    <string name="key_no_network">No Internet.</string>
+    <string name="no_places_available_let_s_start_adding_a_few_places">No places available.\nLet\'s start adding a few places.</string>
+    <string name="add_poi">Add POI</string>
+    <string name="place_search">Place Search</string>
+</resources>
