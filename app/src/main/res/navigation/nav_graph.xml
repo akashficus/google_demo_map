@@ -15,13 +15,23 @@
         <action
             android:id="@+id/action_googleMapLocationFragment_to_searchMapLocationFragment"
             app:destination="@id/searchMapLocationFragment"/>
+        <action
+            android:id="@+id/action_googleMapLocationFragment_to_googleMapPathFragment"
+            app:destination="@id/googleMapPathFragment"/>
     </fragment>
 
     <!-- Search Map Location Fragment -->
+    <fragment
+        android:id="@+id/googleMapPathFragment"
+        android:name="com.rf.locationSource.ui.fragment.GoogleMapPathFragment"
+        android:label="Path Location"
+        tools:layout="@layout/google_map_path_fragment"/>
+
     <fragment
         android:id="@+id/searchMapLocationFragment"
         android:name="com.rf.locationSource.ui.fragment.SearchMapLocationFragment"
         android:label="Search Map Location"
         tools:layout="@layout/search_map_location_fragment"/>
+
 
 </navigation>

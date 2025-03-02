@@ -31,6 +31,15 @@ class GoogleMapDemoActivity : BaseActivity<GoogleMapDemoActivityBinding> (R.layo
                         finish()
                     }
                 }
+                R.id.googleMapPathFragment -> {
+                    viewDataBinding?.headerLayout?.toolbar?.title = "Routing"
+                    viewDataBinding?.headerLayout?.ivAppIcon?.setBackgroundResource(R.drawable.left_arrow)
+                    viewDataBinding?.headerLayout?.ivSortLocation?.visibility = View.GONE
+                    viewDataBinding?.headerLayout?.ivAppIcon?.setOnClickListener {
+                        navController.popBackStack()
+                        navController.navigate(R.id.googleMapLocationFragment)
+                    }
+                }
                 R.id.searchMapLocationFragment -> {
                     viewDataBinding?.headerLayout?.toolbar?.title = "Search Place"
                     viewDataBinding?.headerLayout?.ivAppIcon?.setBackgroundResource(R.drawable.left_arrow)

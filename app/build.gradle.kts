@@ -87,5 +87,6 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.google.maps)
     implementation(libs.google.places)
+    implementation (libs.android.maps.utils)
 
 }

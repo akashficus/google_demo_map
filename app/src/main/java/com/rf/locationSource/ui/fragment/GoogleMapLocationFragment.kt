@@ -35,6 +35,9 @@ class GoogleMapLocationFragment : BaseFragment<GoogleMapLocationFragmentBinding>
         }
         setupRecyclerView()
         observePlaceList()
+        mDataBinding.fabShowPath.setOnClickListener{
+            findNavController().navigate(R.id.action_googleMapLocationFragment_to_googleMapPathFragment)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -46,11 +49,15 @@ class GoogleMapLocationFragment : BaseFragment<GoogleMapLocationFragmentBinding>
             layoutManager = LinearLayoutManager(requireContext())
             adapter = placeAdapter
         }
+
     }
 
     private fun observePlaceList() {
         viewModel.placeList.observe(viewLifecycleOwner) { placeList ->
             if (placeList != null && placeList.isNotEmpty()) {
+                if (placeList.size>2){
+                    mDataBinding.fabShowPath.show()
+                }
                 mDataBinding.rvPlaces?.visibility = View.VISIBLE
                 mDataBinding.tvEmptyMessage?.visibility = View.GONE
                 placeAdapter.updateList(placeList)
