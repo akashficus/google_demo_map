@@ -31,6 +31,11 @@ class PlaceAdapter(
         notifyDataSetChanged()
     }
 
+    fun deleteItem(place: Place) {
+        placeList.remove(place)
+        notifyDataSetChanged()
+    }
+
     class PlaceViewHolder(private val binding: ItemPlaceBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(place: Place, onEditClick: (Place) -> Unit, onDeleteClick: (Place) -> Unit) {
             binding.tvPlaceName.text = place.placeName

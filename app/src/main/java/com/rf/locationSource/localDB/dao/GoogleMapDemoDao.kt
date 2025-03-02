@@ -15,13 +15,16 @@ interface GoogleMapDemoDao {
     fun insertPlace(place: Place)
 
     @Transaction
-    @Query("SELECT * FROM place")
+    @Query("SELECT * FROM place ORDER BY placeDistance ASC")
     fun getPlaceList(): LiveData<Place>
 
     @Delete
-    fun deletePlace(place: Place)
+    suspend fun deletePlace(place: Place)
 
-    @Query("SELECT * FROM Place")
-    fun getAllPlaces(): List<Place>
+    @Query("SELECT * FROM place ORDER BY placeDistance ASC")
+    suspend fun getAllPlaces(): List<Place>
+
+    @Query("Select * from place limit 1")
+    suspend fun getFirstPlaceOrder() : Place?
 
 }

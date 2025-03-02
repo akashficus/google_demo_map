@@ -77,8 +77,16 @@ class GoogleMapDemoViewModel @Inject constructor(
         }
     }
 
-    fun deletePlace(place: Place) {
+    suspend fun deletePlace(place: Place) {
         googleMapLocationRepository.googleMapDemoDB.googleMapDemoDao().deletePlace(place)
+    }
+
+    suspend fun getFirstPlaceOrder():Place? {
+        return googleMapLocationRepository.googleMapDemoDB.googleMapDemoDao().getFirstPlaceOrder()
+    }
+
+    suspend fun getPlaceListMapping() :List<Place>{
+        return googleMapLocationRepository.googleMapDemoDB.googleMapDemoDao().getAllPlaces()
     }
 
 }

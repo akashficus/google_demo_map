@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.activity.viewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -30,7 +32,11 @@ import com.rf.locationSource.databinding.SearchMapLocationFragmentBinding
 import com.rf.locationSource.localDB.model.Place
 import com.rf.locationSource.ui.base.BaseFragment
 import com.rf.locationSource.ui.viewmodel.GoogleMapDemoViewModel
+import com.rf.locationSource.utils.Constant
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>(R.layout.search_map_location_fragment), OnMapReadyCallback {
@@ -87,12 +93,20 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
         // Set window position to top
         dialog.window?.apply {
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            setGravity(Gravity.TOP) // Position at the top
+            setGravity(Gravity.TOP)
         }
 
         val saveButton = dialog.findViewById<Button>(R.id.btnSave)
         saveButton?.setOnClickListener {
-            viewModel.insertPlace(place)
+            lifecycleScope.launch{
+                val firstPlace = viewModel.getFirstPlaceOrder()
+                firstPlace?.let {
+                    place.placeDistance = Constant.calculateDistance(firstPlace,place)
+                }
+                viewModel.insertPlace(place)
+                findNavController().popBackStack()
+                findNavController().navigate(R.id.googleMapLocationFragment)
+            }
             dialog.dismiss()
         }
     }
@@ -121,7 +135,7 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
         hideKeyBoard()
 
         viewModel.getPlaceDetails(placeId)
-        viewModel.getPlaceDetailsResponseModel.observe(this){
+        viewModel.getPlaceDetailsResponseModel.observe(viewLifecycleOwner){
             when(it.status){
                 Status.SUCCESS->{
                     Log.d("fetchPlaceDetails","::"+it.data?.result?.geometry?.location?.lat)
@@ -133,7 +147,7 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
                                 .position(latLng)
                                 .title(placeName)
                         )
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 6f))
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5f))
                         showSaveLocationDialog(Place(placeId,placeName,"",latLng.latitude,latLng.longitude))
                     }
                 }
@@ -146,18 +160,18 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
 
     private fun hideKeyBoard() {
         val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(mDataBinding?.editSearchPlace?.windowToken, 0)
-        mDataBinding?.editSearchPlace?.setText("")
+        inputMethodManager.hideSoftInputFromWindow(mDataBinding.editSearchPlace.windowToken, 0)
+        mDataBinding.editSearchPlace.setText("")
         placeList = arrayListOf()
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, placeList)
-        mDataBinding?.editSearchPlace?.setAdapter(adapter)
+        mDataBinding.editSearchPlace.setAdapter(adapter)
         adapter.notifyDataSetChanged()
-        mDataBinding?.editSearchPlace?.dismissDropDown()
+        mDataBinding.editSearchPlace.dismissDropDown()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
       this.googleMap = googleMap
-        val defaultLocation = LatLng(22.7196, 75.8577)
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 6f))
+        val defaultLocation = LatLng(21.1458, 79.0882)// set nagpur center
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 5f))
     }
 }

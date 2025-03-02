@@ -11,12 +11,14 @@ import com.rf.locationSource.ui.base.BaseActivity
 import com.rf.locationSource.ui.viewmodel.GoogleMapDemoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rf.locationSource.databinding.GoogleMapLocationFragmentBinding
 import com.rf.locationSource.localDB.model.Place
 import com.rf.locationSource.ui.adapter.PlaceAdapter
 import com.rf.locationSource.ui.base.BaseFragment
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -30,11 +32,15 @@ class GoogleMapLocationFragment : BaseFragment<GoogleMapLocationFragmentBinding>
     }
 
     private fun initializationView() {
+        setupRecyclerView()
+        observePlaceList()
         mDataBinding.btnAddLocation.setOnClickListener {
             findNavController().navigate(R.id.action_googleMapLocationFragment_to_searchMapLocationFragment)
         }
-        setupRecyclerView()
-        observePlaceList()
+        mDataBinding.btnAddPOI.setOnClickListener {
+            findNavController().navigate(R.id.action_googleMapLocationFragment_to_searchMapLocationFragment)
+        }
+
         mDataBinding.fabShowPath.setOnClickListener{
             findNavController().navigate(R.id.action_googleMapLocationFragment_to_googleMapPathFragment)
         }
@@ -58,12 +64,16 @@ class GoogleMapLocationFragment : BaseFragment<GoogleMapLocationFragmentBinding>
                 if (placeList.size>2){
                     mDataBinding.fabShowPath.show()
                 }
-                mDataBinding.rvPlaces?.visibility = View.VISIBLE
-                mDataBinding.tvEmptyMessage?.visibility = View.GONE
+                mDataBinding.rvPlaces.visibility = View.VISIBLE
+                mDataBinding.tvEmptyMessage.visibility = View.GONE
+                mDataBinding.btnAddPOI.visibility =View.GONE
+                mDataBinding.btnAddLocation.visibility = View.VISIBLE
                 placeAdapter.updateList(placeList)
             } else {
-                mDataBinding.rvPlaces?.visibility = View.GONE
-                mDataBinding.tvEmptyMessage?.visibility = View.VISIBLE
+                mDataBinding.btnAddPOI.visibility =View.VISIBLE
+                mDataBinding.rvPlaces.visibility = View.GONE
+                mDataBinding.btnAddLocation.visibility = View.INVISIBLE
+                mDataBinding.tvEmptyMessage.visibility = View.VISIBLE
                 Log.d("SearchMapLocationActivity", "No places found in database.")
             }
         }
@@ -71,17 +81,21 @@ class GoogleMapLocationFragment : BaseFragment<GoogleMapLocationFragmentBinding>
 
     private fun editPlace(place: Place) {
         // Handle edit action (Show a dialog or navigate to another activity)
-        //Toast.makeText(this, "Edit: ${place.placeName}", Toast.LENGTH_SHORT).show()
+        Toast.makeText(activity, "Edit: ${place.placeName}", Toast.LENGTH_SHORT).show()
     }
 
     private fun deletePlace(place: Place) {
-       /* AlertDialog.Builder(activity)
+       AlertDialog.Builder(activity)
             .setTitle("Delete Place")
             .setMessage("Are you sure you want to delete ${place.placeName}?")
             .setPositiveButton("Yes") { _, _ ->
-                viewModel.deletePlace(place)  // Ensure ViewModel has this function
+                lifecycleScope.launch {
+                    viewModel.deletePlace(place)
+                    findNavController().navigate(R.id.googleMapLocationFragment)
+                }
+
             }
             .setNegativeButton("No", null)
-            .show()*/
+            .show()
     }
 }

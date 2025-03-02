@@ -55,11 +55,7 @@ class GoogleMapLocationRepository @Inject constructor(
         googleMapDemoDB.googleMapDemoDao().insertPlace(place)
     }
 
-    fun getPlaceList(): LiveData<Place>{
-        return googleMapDemoDB.googleMapDemoDao().getPlaceList()
-    }
-
-    fun getPlaceListFromDb(): List<Place> {
+    suspend fun getPlaceListFromDb(): List<Place> {
         return googleMapDemoDB.googleMapDemoDao().getAllPlaces()
     }
 

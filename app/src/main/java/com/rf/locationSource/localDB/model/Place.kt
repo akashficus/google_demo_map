@@ -12,5 +12,6 @@ data class Place(
     var placeName: String?=null,
     var placeAddress: String?=null,
     var placeLatitude: Double?=null,
-    var placeLongitude: Double?=null
+    var placeLongitude: Double?=null,
+    var placeDistance:Float=0f
 )
