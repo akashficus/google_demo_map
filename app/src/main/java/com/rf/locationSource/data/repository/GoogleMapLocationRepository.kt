@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.google.gson.JsonObject
 import com.rf.locationSource.data.repository.remote.GoogleMapDemoApiServices
+import com.rf.locationSource.data.repository.request.DirectionsResponse
 import com.rf.locationSource.data.repository.request.PlaceDetailsResponse
 import com.rf.locationSource.data.repository.request.PlacesAutocompleteResponse
 import com.rf.locationSource.localDB.GoogleMapDemoDB
@@ -46,6 +47,19 @@ class GoogleMapLocationRepository @Inject constructor(
     ) {
 
         apiServices.getPlaceDetails(searchKeyBoard).apply {
+            execute1(this, success, fail, context, message)
+        }
+
+    }
+
+    fun getDirections(
+        success: (placesAutocompleteResponse : DirectionsResponse) -> Unit,
+        fail: (error: String) -> Unit,
+        origin: String,destination: String,waypoints:String,
+        message: (msg: String) -> Unit
+    ) {
+
+        apiServices.getDirections(origin,destination,waypoints).apply {
             execute1(this, success, fail, context, message)
         }
 

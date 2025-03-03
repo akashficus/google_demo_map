@@ -2,6 +2,7 @@ package com.rf.locationSource.data.repository.remote
 
 import com.google.gson.JsonObject
 import com.rf.locationSource.BuildConfig
+import com.rf.locationSource.data.repository.request.DirectionsResponse
 import com.rf.locationSource.data.repository.request.PlaceDetailsResponse
 import com.rf.locationSource.data.repository.request.PlacesAutocompleteResponse
 import org.json.JSONObject
@@ -25,4 +26,11 @@ interface GoogleMapDemoApiServices {
         @Query("key") apiKey: String = BuildConfig.gmpApiKey,
     ): Call<PlaceDetailsResponse>
 
+    @GET("maps/api/directions/json")
+    fun getDirections(
+        @Query("origin") origin: String,
+        @Query("destination") destination: String,
+        @Query("waypoints") waypoints: String?, // Accepts multiple waypoints
+        @Query("key") apiKey: String = BuildConfig.gmpApiKey
+    ): Call<DirectionsResponse>
 }

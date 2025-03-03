@@ -9,6 +9,7 @@ import com.pay2local.modem.utils.setError
 import com.pay2local.modem.utils.setLoading
 import com.pay2local.modem.utils.setSuccess
 import com.rf.locationSource.data.repository.GoogleMapLocationRepository
+import com.rf.locationSource.data.repository.request.DirectionsResponse
 import com.rf.locationSource.data.repository.request.PlaceDetailsResponse
 import com.rf.locationSource.data.repository.request.PlacesAutocompleteResponse
 import com.rf.locationSource.localDB.model.Place
@@ -52,6 +53,21 @@ class GoogleMapDemoViewModel @Inject constructor(
                 { error -> getPlaceDetailsResponseModel.setError(error) },
                 placeId,
                 { message -> getPlaceDetailsResponseModel.setError(message) })
+        }
+    }
+
+    val getDirectionsResponseModel = MutableLiveData<ResponseData<DirectionsResponse>>()
+    fun getDirections(origin: String,destination: String,waypoints:String) {
+        getDirectionsResponseModel.setLoading(null)
+        viewModelScope.launch(Dispatchers.IO) {
+            googleMapLocationRepository.getDirections({ success ->
+                getDirectionsResponseModel.setSuccess(
+                    success
+                )
+            },
+                { error -> getDirectionsResponseModel.setError(error) },
+                origin,destination,waypoints,
+                { message -> getDirectionsResponseModel.setError(message) })
         }
     }
 
