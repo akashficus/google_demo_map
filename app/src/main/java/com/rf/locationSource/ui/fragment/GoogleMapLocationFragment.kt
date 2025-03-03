@@ -20,7 +20,7 @@ import com.rf.locationSource.ui.adapter.PlaceAdapter
 import com.rf.locationSource.ui.base.BaseFragment
 import kotlinx.coroutines.launch
 
-
+// Fragment responsible for managing Google Map locations and user interactions
 @AndroidEntryPoint
 class GoogleMapLocationFragment : BaseFragment<GoogleMapLocationFragmentBinding>(R.layout.google_map_location_fragment) {
 

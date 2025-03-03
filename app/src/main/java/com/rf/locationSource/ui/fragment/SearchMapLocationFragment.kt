@@ -37,12 +37,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-
+/// This fragment is responsible for displaying a Google Map and handling location search functionality.
 @AndroidEntryPoint
 class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>(R.layout.search_map_location_fragment), OnMapReadyCallback {
 
     private val viewModel: GoogleMapDemoViewModel by viewModels()
-    lateinit var placeList:List<Prediction>
+    lateinit var placeList: List<Prediction>
     private lateinit var googleMap: GoogleMap
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -56,33 +56,31 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
         initializationView()
     }
 
+    /// Initializes the view by setting up the map and search field interactions.
     fun initializationView() {
         val mapFragment = childFragmentManager?.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
         mDataBinding?.editSearchPlace?.setOnItemClickListener { _, _, position, _ ->
             val selectedPlace = placeList[position]
-            //viewDataBinding?.editSearchPlace?.setText(selectedPlace.description)
-            fetchPlaceDetails(selectedPlace.placeId,selectedPlace.description)
+            fetchPlaceDetails(selectedPlace.placeId, selectedPlace.description)
         }
-        mDataBinding?.editSearchPlace?.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                // Called after the text is changed
-            }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Called before the text is changed
-            }
+        // Adds a text change listener to trigger location search when typing.
+        mDataBinding?.editSearchPlace?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (!s.isNullOrEmpty() && s.length>=3) {
+                if (!s.isNullOrEmpty() && s.length >= 3) {
                     setSearchMapping(s.toString())
                 }
             }
         })
-
     }
 
+    /// Displays a dialog for saving the selected location.
     private fun showSaveLocationDialog(place: Place) {
         val dialog = AlertDialog.Builder(activity, R.style.TransparentDialog)
             .setView(R.layout.dialog_save_location)
@@ -90,7 +88,7 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
 
         dialog.show()
 
-        // Set window position to top
+        // Positions the dialog at the top of the screen.
         dialog.window?.apply {
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             setGravity(Gravity.TOP)
@@ -98,10 +96,10 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
 
         val saveButton = dialog.findViewById<Button>(R.id.btnSave)
         saveButton?.setOnClickListener {
-            lifecycleScope.launch{
+            lifecycleScope.launch {
                 val firstPlace = viewModel.getFirstPlaceOrder()
                 firstPlace?.let {
-                    place.placeDistance = Constant.calculateDistance(firstPlace,place)
+                    place.placeDistance = Constant.calculateDistance(firstPlace, place)
                 }
                 viewModel.insertPlace(place)
                 findNavController().popBackStack()
@@ -111,36 +109,34 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
         }
     }
 
-
-    fun setSearchMapping(keyword:String) {
+    /// Fetches and updates the list of places matching the given search keyword.
+    fun setSearchMapping(keyword: String) {
         viewModel.getPlaceSuggestions(keyword)
-        viewModel.getPlaceSuggestionsResponseModel.observe(this){
-            when(it.status){
-                Status.SUCCESS->{
-                    Log.d("setSearchMapping","::"+it.data)
+        viewModel.getPlaceSuggestionsResponseModel.observe(this) {
+            when (it.status) {
+                Status.SUCCESS -> {
                     placeList = it.data?.predictions ?: arrayListOf()
                     val placeDescriptions = placeList.map { prediction -> prediction.description }
                     val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, placeDescriptions)
                     mDataBinding?.editSearchPlace?.setAdapter(adapter)
                     mDataBinding?.editSearchPlace?.showDropDown()
                 }
-                Status.ERROR->{}
-                Status.LOADING->{
-                }
+                Status.ERROR -> {}
+                Status.LOADING -> {}
             }
         }
     }
 
-    private fun fetchPlaceDetails(placeId: String,placeName:String) {
+    /// Fetches detailed information about the selected place.
+    private fun fetchPlaceDetails(placeId: String, placeName: String) {
         hideKeyBoard()
 
         viewModel.getPlaceDetails(placeId)
-        viewModel.getPlaceDetailsResponseModel.observe(viewLifecycleOwner){
-            when(it.status){
-                Status.SUCCESS->{
-                    Log.d("fetchPlaceDetails","::"+it.data?.result?.geometry?.location?.lat)
-                    it.data?.result?.geometry?.let { it1->
-                        val latLng = LatLng(it1.location.lat,it1.location.lng)
+        viewModel.getPlaceDetailsResponseModel.observe(viewLifecycleOwner) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    it.data?.result?.geometry?.let { it1 ->
+                        val latLng = LatLng(it1.location.lat, it1.location.lng)
                         googleMap.clear()
                         googleMap.addMarker(
                             MarkerOptions()
@@ -148,16 +144,16 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
                                 .title(placeName)
                         )
                         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 5f))
-                        showSaveLocationDialog(Place(placeId,placeName,"",latLng.latitude,latLng.longitude))
+                        showSaveLocationDialog(Place(placeId, placeName, "", latLng.latitude, latLng.longitude))
                     }
                 }
-                Status.ERROR->{}
-                Status.LOADING->{
-                }
+                Status.ERROR -> {}
+                Status.LOADING -> {}
             }
         }
     }
 
+    /// Hides the keyboard and resets the search input field.
     private fun hideKeyBoard() {
         val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(mDataBinding.editSearchPlace.windowToken, 0)
@@ -169,9 +165,10 @@ class SearchMapLocationFragment : BaseFragment<SearchMapLocationFragmentBinding>
         mDataBinding.editSearchPlace.dismissDropDown()
     }
 
+    /// Called when the Google Map is ready, setting the default center location.
     override fun onMapReady(googleMap: GoogleMap) {
-      this.googleMap = googleMap
-        val defaultLocation = LatLng(21.1458, 79.0882)// set nagpur center
+        this.googleMap = googleMap
+        val defaultLocation = LatLng(21.1458, 79.0882) // Nagpur center
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 5f))
     }
 }

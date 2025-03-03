@@ -30,7 +30,8 @@ import com.rf.locationSource.ui.viewmodel.GoogleMapDemoViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-
+/// GoogleMapPathFragment is responsible for displaying the map and drawing the route based on selected places.
+/// It utilizes Google Maps API to fetch directions and display them on the map.
 @AndroidEntryPoint
 class GoogleMapPathFragment :
     BaseFragment<GoogleMapPathFragmentBinding>(R.layout.google_map_path_fragment),

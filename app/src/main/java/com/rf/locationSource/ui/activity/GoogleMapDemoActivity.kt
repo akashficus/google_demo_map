@@ -11,6 +11,10 @@ import com.rf.locationSource.databinding.GoogleMapDemoActivityBinding
 import com.rf.locationSource.ui.base.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Activity for handling Google Maps demo navigation.
+ * Uses Android Entry Point for dependency injection and Navigation Component for fragment transitions.
+ */
 @AndroidEntryPoint
 class GoogleMapDemoActivity : BaseActivity<GoogleMapDemoActivityBinding> (R.layout.google_map_demo_activity){
 
